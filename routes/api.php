@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\CashRegisterShiftController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\OnboardingController;
 use App\Http\Controllers\Api\BranchController;
+use App\Http\Controllers\Api\PaymentMethodController;
 
 // Public Routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -27,7 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/onboarding/company', [OnboardingController::class, 'createCompany']);
     Route::post('/onboarding/skip', [OnboardingController::class, 'skipWait']);
     Route::get('/user/companies', [OnboardingController::class, 'listCompanies']);
-    
+
     // Switch Company
     Route::post('/switch-company', [OnboardingController::class, 'switchCompany']);
 
@@ -35,14 +36,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware(['tenant', 'company.configured'])->group(function () {
         Route::apiResource('categories', CategoryController::class);
         Route::apiResource('branches', BranchController::class);
-        
+        Route::apiResource('payment-methods', PaymentMethodController::class);
+
         Route::get('/products/export', [ProductController::class, 'export']);
         Route::get('/products/template', [ProductController::class, 'template']);
         Route::post('/products/import', [ProductController::class, 'import']);
         Route::apiResource('products', ProductController::class);
-        
+
         Route::post('/sales', [SaleController::class, 'store']);
-        Route::get('/sales/report', [ReportController::class, 'daily']); 
+        Route::get('/sales/report', [ReportController::class, 'daily']);
 
         // Cash Registers (CRUD)
         Route::get('/cash-registers', [CashRegisterController::class, 'index']);
@@ -55,19 +57,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/shifts/my-shift', [CashRegisterShiftController::class, 'myShift']);
         Route::post('/shifts/open', [CashRegisterShiftController::class, 'open']);
         Route::post('/shifts/{shift}/close', [CashRegisterShiftController::class, 'close']);
-        
+
         Route::get('/integrations', [IntegrationController::class, 'index']);
         Route::put('/integrations/{id}', [IntegrationController::class, 'update']);
-        
+
         // Team Management
         Route::get('/team/users', [\App\Http\Controllers\Api\TeamController::class, 'indexUsers']);
         Route::post('/team/users', [\App\Http\Controllers\Api\TeamController::class, 'storeUser']);
         Route::put('/team/users/{user}', [\App\Http\Controllers\Api\TeamController::class, 'updateUser']);
-        
+
         Route::get('/team/roles', [\App\Http\Controllers\Api\TeamController::class, 'indexRoles']);
         Route::post('/team/roles', [\App\Http\Controllers\Api\TeamController::class, 'storeRole']);
         Route::put('/team/roles/{role}', [\App\Http\Controllers\Api\TeamController::class, 'updateRole']);
-        
+
         Route::get('/team/permissions', [\App\Http\Controllers\Api\TeamController::class, 'indexPermissions']);
     });
 });
